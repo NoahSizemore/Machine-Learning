@@ -1,0 +1,111 @@
+"""
+
+- Project Breakdown:
+
+The project aims to complete the following: Create a dataset based on real data and process it through a linear regression model to predict some value(s).
+
+The project takes data from an engines liter amount, weight, horsepower, and MPG, to accurately predicts additional cars MPG based on the data given.
+Features: Liter amount, weight, horsepower.
+Target: MPG.
+Model: Linear Regression
+
+- Personal Goals:
+
+With this project, I aim to start using and implementing pandas, numpy, and sklearn LinearRegression packages to begin building a foundation for my ML projects.
+The end goal is to have a better grasp of how to implement a linear regression model in Python.
+
+- This is a program created by Noah Sizemore
+
+"""
+
+
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+# Number of rows of data that will be created.
+num_rows = 100
+
+# A list of every engine liter amount.
+liters = [1.0, 1.5, 1.6, 1.7, 1.8, 2.0, 2.2, 2.3, 2.5, 2.6, 2.8, 3.0, 3.2, 3.3, 3.5, 3.7, 3.8, 3.9, 4.1, 4.2, 4.3,
+               4.4, 4.8, 4.9, 5.0, 5.2, 5.7, 5.8, 5.9, 6.0, 6.2, 6.6, 6.9, 7.0, 7.4, 7.5, 7.6, 7.8, 8.1, 8.2, 8.3, 8.6,
+               9.0, 9.1, 9.3, 10.0, 10.4, 10.5, 11.0, 11.6, 12.0, 12.2, 13.9, 14.0, 14.2, 14.6, 14.8, 15.2, 18.0, 18.8]
+
+# Data used in pandas
+dataTable = {
+
+"""
+- Note all values are real values sourced from:
+
+https://www.encycarpedia.com/us/top/least-powerful-cars
+https://www.hotcars.com/highest-horsepower-production-car/#:~:text=The%20Hennessey%20Venom%20F5%20Houses,engine%20as%20the%20'Fury'.
+https://www.reddit.com/r/cars/comments/5qfmhh/highest_mpg_and_lowest_mpg_what_have_you_owned_or/#:~:text=Lowest:%201965%20International%20Harvester%20Travelall,camping%20club%20%2D%20it%20was%20fantastic.
+
+""" 
+
+    # Engine is a random choice from the liters list.
+    "Engine" : np.random.choice(liters, size=num_rows, replace=True),
+    # Weight is a random float value ranging from 1000 to 10000 and rounded.
+    "Weight" : np.random.uniform(1000, 10000, size=num_rows).round(2),
+    # Horsepower is a random integer ranging from 5 to 1817
+    "Horsepower" : np.random.randint(5, 1817, size=num_rows),
+    "MPG": np.random.randint(2, 37, size=num_rows)
+
+}
+
+# If "df" were to encounter an error, display the following.
+try:
+    df = pd.DataFrame(dataTable)
+except Exception as e:
+    print(f"Error: Could not load rawdata into DataFrame. {e}")
+    exit()
+
+# Print the original data created.
+print("---Original Data used---\n")
+print(df)
+
+# Define features and the target.
+features = ["Engine", "Weight", "Horsepower"]
+target = "MPG"
+
+# Assign appropriate naming for model testing.
+X = df[features]
+y = df[target]
+
+# Split the training set.
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train the train split section of the model on linear regression.
+trainModel = LinearRegression()
+trainModel.fit(X_train, y_train)
+
+# Display aspects of the training (i.e., the slope and the intercepts).
+print("\n---Training Details---\n")
+print(f"Training coefficient is {trainModel.coef_}")
+print(f"Training intercept is {trainModel.intercept_:.2f}")
+
+# Creating "testCars" to predict.
+testCars = np.array([[6.7, 2758, 870], [3.7, 4502, 332], [18.0, 9500, 1200]])
+
+# Predicting the cars MPG.
+trainModelPredict = trainModel.predict(testCars)
+
+
+# Print the predictions.
+print("\n---PREDICTIONS---\n")
+print(f"For a car with a {testCars[0][0]} liters, weighing {testCars[0][1]}lbs, and has a horsepower of {testCars[0][2]}, the predicted MPG is: {trainModelPredict[0]:.2f}")
+print(f"For a car with a {testCars[1][0]} liters, weighing {testCars[1][1]}lbs, and has a horsepower of {testCars[1][2]}, the predicted MPG is: {trainModelPredict[1]:.2f}")
+print(f"For a car with a {testCars[2][0]} liters, weighing {testCars[2][1]}lbs, and has a horsepower of {testCars[2][2]}, the predicted MPG is: {trainModelPredict[2]:.2f}")
+
+# Print the performance of the model.
+print("\n---Model Performance---\n")
+y_prediction = trainModel.predict(X_test)
+# Preform the model mean square error.
+print(f"Model RMSE on test data: {np.sqrt(mean_squared_error(y_test, y_prediction)):.2f}")
+print("\n-----------------------\n")
+
+# End of code.
+
